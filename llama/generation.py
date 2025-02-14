@@ -10,6 +10,7 @@ from typing import List, Optional, Tuple, TypedDict
 
 import torch
 import torch.nn.functional as F
+import tqdm
 from fairscale.nn.model_parallel.initialize import (
     get_model_parallel_rank,
     initialize_model_parallel,
@@ -184,7 +185,7 @@ class Llama:
 
         stop_tokens = torch.tensor(list(self.tokenizer.stop_tokens))
 
-        for cur_pos in range(min_prompt_len, total_len):
+        for cur_pos in tqdm.tqdm(range(min_prompt_len, total_len)):
             logits = self.model.forward(tokens[:, prev_pos:cur_pos], prev_pos)
             if temperature > 0:
                 probs = torch.softmax(logits[:, -1] / temperature, dim=-1)
